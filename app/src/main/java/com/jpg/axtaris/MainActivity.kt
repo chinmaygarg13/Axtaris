@@ -15,7 +15,8 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
-
+import android.content.Intent
+import com.jpg.axtaris.auth.PhoneAuthActivity
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -115,6 +116,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         when (item.itemId) {
             R.id.nav_camera -> {
                 // Handle the camera action
+                startActivity(Intent(this@MainActivity, PhoneAuthActivity::class.java))
             }
             R.id.nav_gallery -> {
 
