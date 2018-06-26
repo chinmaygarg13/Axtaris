@@ -1,0 +1,59 @@
+{
+  "project_info": {
+    "project_number": "926000417433",
+    "firebase_url": "https://axtaris-97a21.firebaseio.com",
+    "project_id": "axtaris-97a21",
+    "storage_bucket": "axtaris-97a21.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:926000417433:android:739feb35965061e7",
+        "android_client_info": {
+          "package_name": "com.jpg.axtaris"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "926000417433-9dub2a8c0phvejnhmv8g7ros9dso8814.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jpg.axtaris",
+            "certificate_hash": "02ec52d1a835305d48c6f8fbadcb1ac2ed2c6b06"
+          }
+        },
+        {
+          "client_id": "926000417433-fkvu4shhshrtoh0jiasu317rd5arc3ru.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "926000417433-fkvu4shhshrtoh0jiasu317rd5arc3ru.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAS2cwUKf_VuGTePDDU3_LLf8wFw7ORQLA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "926000417433-fkvu4shhshrtoh0jiasu317rd5arc3ru.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
