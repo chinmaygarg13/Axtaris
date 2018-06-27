@@ -4,6 +4,11 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
+    <string name="access_token">pk.eyJ1IjoiY2hpbm1heWdhcmciLCJhIjoiY2podzRoZTZpMHQxczNrbGhqMXdub28zNCJ9.oU1rSDWuCq1U9sw8ZTy7qg</string>
+    <string name="draw_marker_options_title">IIT Jodhpur</string>
+    <string name="draw_marker_options_snippet">One of the best engineering institutes of India</string>
+
+
     <string name="action_settings">Settings</string>
 
     <string name="label_google_sign_in">Firebase + Google Sign In</string>
