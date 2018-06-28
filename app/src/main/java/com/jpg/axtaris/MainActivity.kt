@@ -19,6 +19,11 @@ import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.annotations.Marker
 
+import com.mapbox.android.core.permissions.PermissionsListener;
+import com.mapbox.android.core.permissions.PermissionsManager;
+import com.mapbox.mapboxsdk.plugins.locationlayer.LocationLayerPlugin;
+import com.mapbox.mapboxsdk.plugins.locationlayer.modes.CameraMode;
+
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 
@@ -33,12 +38,9 @@ import android.support.annotation.NonNull
 import android.widget.Toast
 
 
-
-
-
-
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback,
-        MapboxMap.OnMapClickListener {
+        MapboxMap.OnMapClickListener, PermissionsListener  {
+
 
     private var mapView: MapView? = null
     private var mapboxMap: MapboxMap? = null
@@ -169,9 +171,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onMapReady(mapboxMap: MapboxMap) {
         this@MainActivity.mapboxMap = mapboxMap
+        enableLocationPlugin();
 
         marker = mapboxMap.addMarker(MarkerOptions()
                 .position(LatLng(26.472885, 73.113890)))
+
 
         Toast.makeText(
                 this@MainActivity,
@@ -180,6 +184,23 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         ).show()
 
         mapboxMap.addOnMapClickListener(this)
+    }
+
+    private fun enableLocationPlugin() {
+        // Check if permissions are enabled and if not request
+        if (PermissionsManager.areLocationPermissionsGranted(this)) {
+
+            // Create an instance of the plugin. Adding in LocationLayerOptions is also an optional
+            // parameter
+            val locationLayerPlugin = mapView?.let { mapboxMap?.let { it1 -> LocationLayerPlugin(it, it1) } }
+
+            // Set the plugin's camera mode
+            locationLayerPlugin!!.cameraMode = CameraMode.TRACKING;
+            lifecycle.addObserver(locationLayerPlugin);
+        } else {
+            val permissionsManager = PermissionsManager(this);
+            permissionsManager.requestLocationPermissions(this);
+        }
     }
 
     override fun onMapClick(point: LatLng) {
@@ -202,4 +223,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             return latLng
         }
     }
+
+    override fun onExplanationNeeded(permissionsToExplain: MutableList<String>?) {
+        Toast.makeText(this, "This app needs location permissions in order to show its functionality.", Toast.LENGTH_LONG).show();    }
+
+    override fun onPermissionResult(granted: Boolean) {
+        if (granted) {
+            enableLocationPlugin()
+        } else {
+            Toast.makeText(this, "You did not grant location permissions.", Toast.LENGTH_LONG).show()
+            finish()
+        }    }
 }
