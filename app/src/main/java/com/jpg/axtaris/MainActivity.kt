@@ -6,24 +6,43 @@ import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
+
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.maps.MapView
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.app_bar_main.*
-import com.mapbox.mapboxsdk.maps.MapboxMap
-import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
-import android.content.Intent
-import com.jpg.axtaris.auth.PhoneAuthActivity
 import com.mapbox.mapboxsdk.annotations.MarkerOptions
 import com.mapbox.mapboxsdk.geometry.LatLng
+import com.mapbox.mapboxsdk.maps.MapboxMap
+import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
+import com.mapbox.mapboxsdk.annotations.Marker
+
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.app_bar_main.*
+
+import android.content.Intent
+import com.jpg.axtaris.auth.PhoneAuthActivity
+//import sun.awt.windows.ThemeReader.getPosition
+
+import android.animation.ObjectAnimator
+import android.animation.TypeEvaluator
+import android.animation.ValueAnimator
+import android.support.annotation.NonNull
+import android.widget.Toast
 
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+
+
+
+
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback,
+        MapboxMap.OnMapClickListener {
 
     private var mapView: MapView? = null
+    private var mapboxMap: MapboxMap? = null
+    private var marker: Marker? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,13 +54,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         mapView = findViewById<View>(R.id.mapView) as MapView?
         mapView!!.onCreate(savedInstanceState)
-        mapView!!.getMapAsync(OnMapReadyCallback { mapboxMap ->
+
+        //for stationary marker over iitj
+        /*mapView!!.getMapAsync(OnMapReadyCallback { mapboxMap ->
             mapboxMap.addMarker(MarkerOptions()
                     .position(LatLng(26.472885, 73.113890))
                     .title(getString(R.string.draw_marker_options_title))
                     .snippet(getString(R.string.draw_marker_options_snippet)))
-        })
+        })*/
 
+        //for sliding marker
+        mapView!!.getMapAsync(this)
 
         fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
@@ -142,5 +165,41 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         drawer_layout.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    override fun onMapReady(mapboxMap: MapboxMap) {
+        this@MainActivity.mapboxMap = mapboxMap
+
+        marker = mapboxMap.addMarker(MarkerOptions()
+                .position(LatLng(26.472885, 73.113890)))
+
+        Toast.makeText(
+                this@MainActivity,
+                getString(R.string.tap_on_map_instruction),
+                Toast.LENGTH_LONG
+        ).show()
+
+        mapboxMap.addOnMapClickListener(this)
+    }
+
+    override fun onMapClick(point: LatLng) {
+        // When the user clicks on the map, we want to animate the marker to that
+        // location.
+        val markerAnimator = ObjectAnimator.ofObject(marker, "position",
+                LatLngEvaluator(), marker!!.position, point)
+        markerAnimator.duration = 1000
+        markerAnimator.start()
+    }
+
+    private class LatLngEvaluator : TypeEvaluator<LatLng> {
+        // Method is used to interpolate the marker animation.
+
+        private val latLng = LatLng()
+
+        override fun evaluate(fraction: Float, startValue: LatLng, endValue: LatLng): LatLng {
+            latLng.latitude = startValue.latitude + (endValue.latitude - startValue.latitude) * fraction
+            latLng.longitude = startValue.longitude + (endValue.longitude - startValue.longitude) * fraction
+            return latLng
+        }
     }
 }

@@ -8,6 +8,8 @@
     <string name="draw_marker_options_title">IIT Jodhpur</string>
     <string name="draw_marker_options_snippet">One of the best engineering institutes of India</string>
 
+    <string name="tap_on_map_instruction">Tap anywhere on the map</string>
+
 
     <string name="action_settings">Settings</string>
 
