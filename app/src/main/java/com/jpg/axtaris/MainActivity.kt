@@ -17,6 +17,8 @@ import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import android.content.Intent
 import com.jpg.axtaris.auth.PhoneAuthActivity
+import com.mapbox.mapboxsdk.annotations.MarkerOptions
+import com.mapbox.mapboxsdk.geometry.LatLng
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -33,8 +35,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         mapView = findViewById<View>(R.id.mapView) as MapView?
         mapView!!.onCreate(savedInstanceState)
-        mapView!!.getMapAsync(OnMapReadyCallback {
-            // Customize map with markers, polylines, etc.
+        mapView!!.getMapAsync(OnMapReadyCallback { mapboxMap ->
+            mapboxMap.addMarker(MarkerOptions()
+                    .position(LatLng(26.472885, 73.113890))
+                    .title(getString(R.string.draw_marker_options_title))
+                    .snippet(getString(R.string.draw_marker_options_snippet)))
         })
 
 

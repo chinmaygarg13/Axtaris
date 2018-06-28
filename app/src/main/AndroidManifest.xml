@@ -26,6 +26,7 @@
             android:name="com.jpg.axtaris.auth.PhoneAuthActivity"
             android:label="@string/label_phone_auth"
             android:windowSoftInputMode="adjustPan" />
+
     </application>
 
 </manifest>
