@@ -21,8 +21,6 @@ import com.mapbox.mapboxsdk.annotations.Marker
 
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
-import com.mapbox.mapboxsdk.plugins.locationlayer.LocationLayerPlugin;
-import com.mapbox.mapboxsdk.plugins.locationlayer.modes.CameraMode;
 
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
@@ -49,7 +47,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Mapbox.getInstance(this, "pk.eyJ1IjoiY2hpbm1heWdhcmciLCJhIjoiY2podzRoZTZpMHQxczNrbGhqMXdub28zNCJ9.oU1rSDWuCq1U9sw8ZTy7qg")
+        Mapbox.getInstance(this, "pk.eyJ1IjoiYXh0YXJpcyIsImEiOiJjamlkaGV6N24wYWpvM3FsbzUwMDhkNGxzIn0.MwV7Ab4ez0VOWm6OSoTORQ")
 
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
@@ -171,7 +169,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onMapReady(mapboxMap: MapboxMap) {
         this@MainActivity.mapboxMap = mapboxMap
-        enableLocationPlugin();
 
         marker = mapboxMap.addMarker(MarkerOptions()
                 .position(LatLng(26.472885, 73.113890)))
@@ -186,22 +183,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         mapboxMap.addOnMapClickListener(this)
     }
 
-    private fun enableLocationPlugin() {
-        // Check if permissions are enabled and if not request
-        if (PermissionsManager.areLocationPermissionsGranted(this)) {
-
-            // Create an instance of the plugin. Adding in LocationLayerOptions is also an optional
-            // parameter
-            val locationLayerPlugin = mapView?.let { mapboxMap?.let { it1 -> LocationLayerPlugin(it, it1) } }
-
-            // Set the plugin's camera mode
-            locationLayerPlugin!!.cameraMode = CameraMode.TRACKING;
-            lifecycle.addObserver(locationLayerPlugin);
-        } else {
-            val permissionsManager = PermissionsManager(this);
-            permissionsManager.requestLocationPermissions(this);
-        }
-    }
 
     override fun onMapClick(point: LatLng) {
         // When the user clicks on the map, we want to animate the marker to that
@@ -229,7 +210,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onPermissionResult(granted: Boolean) {
         if (granted) {
-            enableLocationPlugin()
         } else {
             Toast.makeText(this, "You did not grant location permissions.", Toast.LENGTH_LONG).show()
             finish()
