@@ -1,11 +1,13 @@
 package com.jpg.axtaris
 
 import android.os.Bundle
+import android.Manifest;
 import android.support.design.widget.Snackbar
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
+import android.support.v4.content.ContextCompat.startActivity
 
 import android.view.Menu
 import android.view.MenuItem
@@ -19,23 +21,31 @@ import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.annotations.Marker
 
-import com.mapbox.android.core.permissions.PermissionsListener;
-import com.mapbox.android.core.permissions.PermissionsManager;
-import com.mapbox.mapboxsdk.plugins.locationlayer.LocationLayerPlugin;
-import com.mapbox.mapboxsdk.plugins.locationlayer.modes.CameraMode;
+import com.mapbox.android.core.permissions.PermissionsListener
+import com.mapbox.android.core.permissions.PermissionsManager
+import com.mapbox.mapboxsdk.plugins.locationlayer.LocationLayerPlugin
+import com.mapbox.mapboxsdk.plugins.locationlayer.modes.CameraMode
 
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 
 import android.content.Intent
 import com.jpg.axtaris.auth.PhoneAuthActivity
-//import sun.awt.windows.ThemeReader.getPosition
 
 import android.animation.ObjectAnimator
 import android.animation.TypeEvaluator
 import android.animation.ValueAnimator
 import android.support.annotation.NonNull
 import android.widget.Toast
+import android.content.Context
+import android.content.pm.PackageManager
+import android.graphics.Color
+import android.location.Location
+import android.support.annotation.Nullable
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
+import com.mapbox.mapboxsdk.camera.CameraPosition
+import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback,
@@ -49,6 +59,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        //call to LocationSetting activity to enable gps
+        val context: Context = this
+        val i = Intent()
+        i.setClass(context, LocationSetting::class.java)
+        i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        val bundle1 = intent.extras
+        startActivity(context, i, bundle1)
+
         Mapbox.getInstance(this, "pk.eyJ1IjoiY2hpbm1heWdhcmciLCJhIjoiY2podzRoZTZpMHQxczNrbGhqMXdub28zNCJ9.oU1rSDWuCq1U9sw8ZTy7qg")
 
         setContentView(R.layout.activity_main)
@@ -57,20 +76,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         mapView = findViewById<View>(R.id.mapView) as MapView?
         mapView!!.onCreate(savedInstanceState)
 
-        //for stationary marker over iitj
-        /*mapView!!.getMapAsync(OnMapReadyCallback { mapboxMap ->
-            mapboxMap.addMarker(MarkerOptions()
-                    .position(LatLng(26.472885, 73.113890))
-                    .title(getString(R.string.draw_marker_options_title))
-                    .snippet(getString(R.string.draw_marker_options_snippet)))
-        })*/
 
         //for sliding marker
         mapView!!.getMapAsync(this)
 
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
+        fab.setOnClickListener {
+            // Toggle GPS position updates
         }
 
         val toggle = ActionBarDrawerToggle(
@@ -84,6 +95,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     public override fun onStart() {
         super.onStart()
         mapView!!.onStart()
+
     }
 
     public override fun onResume() {
@@ -171,7 +183,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onMapReady(mapboxMap: MapboxMap) {
         this@MainActivity.mapboxMap = mapboxMap
-        enableLocationPlugin();
+        enableLocationPlugin()
 
         marker = mapboxMap.addMarker(MarkerOptions()
                 .position(LatLng(26.472885, 73.113890)))
@@ -186,22 +198,20 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         mapboxMap.addOnMapClickListener(this)
     }
 
-    private fun enableLocationPlugin() {
-        // Check if permissions are enabled and if not request
-        if (PermissionsManager.areLocationPermissionsGranted(this)) {
+    private fun enableLocationPlugin() =// Check if permissions are enabled and if not request
+            if (PermissionsManager.areLocationPermissionsGranted(this)) {
 
-            // Create an instance of the plugin. Adding in LocationLayerOptions is also an optional
-            // parameter
-            val locationLayerPlugin = mapView?.let { mapboxMap?.let { it1 -> LocationLayerPlugin(it, it1) } }
+                // Create an instance of the plugin. Adding in LocationLayerOptions is also an optional
+                // parameter
+                val locationLayerPlugin = mapView?.let { mapboxMap?.let { it1 -> LocationLayerPlugin(it, it1) } }
 
-            // Set the plugin's camera mode
-            locationLayerPlugin!!.cameraMode = CameraMode.TRACKING;
-            lifecycle.addObserver(locationLayerPlugin);
-        } else {
-            val permissionsManager = PermissionsManager(this);
-            permissionsManager.requestLocationPermissions(this);
-        }
-    }
+                // Set the plugin's camera mode
+                locationLayerPlugin!!.cameraMode = CameraMode.TRACKING
+                lifecycle.addObserver(locationLayerPlugin)
+            } else {
+                val permissionsManager = PermissionsManager(this)
+                permissionsManager.requestLocationPermissions(this)
+            }
 
     override fun onMapClick(point: LatLng) {
         // When the user clicks on the map, we want to animate the marker to that
@@ -233,5 +243,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         } else {
             Toast.makeText(this, "You did not grant location permissions.", Toast.LENGTH_LONG).show()
             finish()
-        }    }
+        }
+    }
 }
